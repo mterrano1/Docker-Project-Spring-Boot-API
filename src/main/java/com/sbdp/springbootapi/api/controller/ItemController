@@ -1,0 +1,53 @@
+package com.sbdp.springbootapi.api.controller;
+
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import com.dpsba.dockerprojectspringbootapi.model.Item;
+import com.dpsba.dockerprojectspringbootapi.service.ItemService;
+
+@RestController
+@RequestMapping("/api")
+public class ItemController {
+
+    @Autowired
+    private ItemService itemService;
+
+    @GetMapping("/items")
+    public ResponseEntity<List<Item>> getAllItems() {
+        List<Item> items = itemService.getAllItems();
+        return new ResponseEntity<>(items, HttpStatus.OK);
+    }
+
+    @GetMapping("/items/{id}")
+    public ResponseEntity<Item> getItemById(@PathVariable Long id) {
+        Item item = itemService.getItemById(id);
+        if (item == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(item, HttpStatus.OK);
+    }
+
+    @PostMapping("/items")
+    public ResponseEntity<Item> createItem(@RequestBody Item item) {
+        Item savedItem = itemService.createItem(item);
+        return new ResponseEntity<>(savedItem, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/items/{id}")
+    public ResponseEntity<Item> updateItem(@PathVariable Long id, @RequestBody Item item) {
+        Item updatedItem = itemService.updateItem(id, item);
+        if (updatedItem == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(updatedItem, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/items/{id}")
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
+        itemService.deleteItem(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+}
